@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../controllers/auth_controller.dart';
-import 'login_page.dart';
+import 'condition_screen.dart';
+
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -22,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
 
     if (result == "Registro exitoso") {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ConditionsScreen()));
     }
   }
 

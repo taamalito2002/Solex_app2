@@ -12,19 +12,26 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selected = 0;
+  double? _temperature; // 🔥 guardamos la temperatura actual
 
-  final List<Widget> _pages = [
-    const HomePage(),     // tu pantalla del clima
-    const HistoryPage(),  // historial semanal (vacío por ahora)
-    const AdvicePage(),   // consejos (vacío por ahora)
-  ];
+  void _onTemperatureChanged(double temp) {
+    setState(() {
+      _temperature = temp;
+    });
+  }
 
   void _onTap(int idx) => setState(() => _selected = idx);
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      HomePage(onTemperatureChanged: _onTemperatureChanged),
+      const HistoryPage(),
+      AdvicePage(currentTemperature: _temperature), // 👈 se la pasamos a Advice
+    ];
+
     return Scaffold(
-      body: _pages[_selected],
+      body: pages[_selected],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selected,
         onTap: _onTap,

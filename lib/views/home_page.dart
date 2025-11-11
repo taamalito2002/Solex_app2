@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Function(double) onTemperatureChanged;
+
+  const HomePage({super.key, required this.onTemperatureChanged});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -30,6 +32,7 @@ class _HomePageState extends State<HomePage> {
       _loading = true;
       _error = null;
     });
+
     final data = await _service.getWeatherByLocation();
     if (data != null) {
       _applyData(data);
@@ -55,6 +58,11 @@ class _HomePageState extends State<HomePage> {
       _description = data['description'];
       _loading = false;
     });
+
+    // ✅ Enviamos la temperatura actual al MainScreen
+    if (_temp != null) {
+      widget.onTemperatureChanged(_temp!);
+    }
   }
 
   @override
@@ -68,20 +76,45 @@ class _HomePageState extends State<HomePage> {
         child: _loading
             ? const CircularProgressIndicator()
             : _error != null
-                ? Text(_error!, style: const TextStyle(color: Colors.red))
+                ? Text(
+                    _error!,
+                    style: const TextStyle(color: Colors.red),
+                  )
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text("Ciudad: $_city", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                      Text(
+                        "Ciudad: $_city",
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 8),
-                      Text("Temperatura: ${_temp?.toStringAsFixed(1)} °C", style: const TextStyle(fontSize: 20)),
-                      Text("Humedad: ${_humidity ?? '--'} %", style: const TextStyle(fontSize: 18)),
-                      Text("Viento: ${_wind?.toStringAsFixed(1)} km/h", style: const TextStyle(fontSize: 18)),
-                      Text("Pronóstico: $_description", style: const TextStyle(fontSize: 18)),
+                      Text(
+                        "Temperatura: ${_temp?.toStringAsFixed(1)} °C",
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        "Humedad: ${_humidity ?? '--'} %",
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        "Viento: ${_wind?.toStringAsFixed(1)} km/h",
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        "Pronóstico: $_description",
+                        style: const TextStyle(fontSize: 18),
+                      ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: _loadWeather,
-                        child: const Text("Actualizar"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                        ),
+                        child: const Text(
+                          "Actualizar",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
