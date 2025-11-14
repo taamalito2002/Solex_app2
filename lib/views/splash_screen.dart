@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                   // Texto de la app adaptable
                   Text(
-                    "SOLEX_APP",
+                    "SOLEX",
                     style: TextStyle(
                       fontSize: fontSize,
                       fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
+import '../services/history_service.dart';
 
 class HomePage extends StatefulWidget {
   final Function(double) onTemperatureChanged;
@@ -49,6 +50,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // ================================
+  //      AQUI ESTA LA PARTE BUENA
+  // ================================
   void _applyData(Map<String, dynamic> data) {
     setState(() {
       _city = data['city'];
@@ -59,10 +63,19 @@ class _HomePageState extends State<HomePage> {
       _loading = false;
     });
 
-    // ✅ Enviamos la temperatura actual al MainScreen
+    // 1️⃣ Enviar la temperatura al MainScreen
     if (_temp != null) {
       widget.onTemperatureChanged(_temp!);
     }
+
+    // 2️⃣ Guardar TODO el clima en el historial
+    HistoryService.addWeatherRecord({
+      "city": _city,
+      "temp": _temp,
+      "humidity": _humidity,
+      "wind": _wind,
+      "description": _description,
+    });
   }
 
   @override
@@ -102,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                         style: const TextStyle(fontSize: 18),
                       ),
                       Text(
-                        "Pronóstico: $_description",
+                        "Pronostico: $_description",
                         style: const TextStyle(fontSize: 18),
                       ),
                       const SizedBox(height: 20),

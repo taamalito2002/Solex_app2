@@ -27,7 +27,8 @@ class _MainScreenState extends State<MainScreen> {
     final List<Widget> pages = [
       HomePage(onTemperatureChanged: _onTemperatureChanged),
       const HistoryPage(),
-      AdvicePage(currentTemperature: _temperature), // 👈 se la pasamos a Advice
+      AdvicePage(temperature: _temperature ?? 0),
+
     ];
 
     return Scaffold(
