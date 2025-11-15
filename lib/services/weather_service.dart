@@ -3,12 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 
 class WeatherService {
-  final String apiKey = "54c4d18f820b30293be9dbd0992f8c1c";
+  final String apiKey = "2bf37db5d23780226eeef1b2a6982495";
 
   // 🔹 Obtener el clima usando el nombre de la ciudad
   Future<Map<String, dynamic>?> getWeather(String city) async {
     final url = Uri.parse(
-      "https://api.openweathermap.org/data/2.5/weather?q=$city,CO&appid=$apiKey&units=metric&lang=es",
+      "https://api.openweathermap.org/data/2.5/weather?q=$city,CO&appid=$apiKey",
     );
 
     try {

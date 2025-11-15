@@ -29,19 +29,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadWeather() async {
+    if (!mounted) return;
+
     setState(() {
       _loading = true;
       _error = null;
     });
 
     final data = await _service.getWeatherByLocation();
+
+    // Evita setState despues de que la pantalla se haya cerrado
+    if (!mounted) return;
+
     if (data != null) {
       _applyData(data);
     } else {
       final fallback = await _service.getWeather(_city);
+
+      if (!mounted) return;
+
       if (fallback != null) {
         _applyData(fallback);
       } else {
+        if (!mounted) return;
+
         setState(() {
           _loading = false;
           _error = "No se pudo obtener el clima.";
@@ -50,10 +61,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // ================================
-  //      AQUI ESTA LA PARTE BUENA
-  // ================================
   void _applyData(Map<String, dynamic> data) {
+    if (!mounted) return;
+
     setState(() {
       _city = data['city'];
       _temp = data['temp'];
@@ -63,12 +73,12 @@ class _HomePageState extends State<HomePage> {
       _loading = false;
     });
 
-    // 1️⃣ Enviar la temperatura al MainScreen
-    if (_temp != null) {
+    // Evitar llamar a setState en otra pantalla si ya no existe
+    if (mounted && _temp != null) {
       widget.onTemperatureChanged(_temp!);
     }
 
-    // 2️⃣ Guardar TODO el clima en el historial
+    // Guardar en historial
     HistoryService.addWeatherRecord({
       "city": _city,
       "temp": _temp,

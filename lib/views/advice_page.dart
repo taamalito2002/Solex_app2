@@ -16,41 +16,48 @@ class _AdvicePageState extends State<AdvicePage> {
   @override
   void didUpdateWidget(covariant AdvicePage oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // 🔥 Si la temperatura cambió, se actualizan los consejos automáticamente
     if (oldWidget.temperature != widget.temperature) {
       setState(() {});
     }
   }
 
+  // Iconos segun la temperatura
+  IconData _getIconForTemp(double temp) {
+    if (temp < 15) return Icons.ac_unit; // Frio
+    if (temp < 25) return Icons.wb_sunny; // Templado
+    if (temp < 32) return Icons.thermostat; // Calor moderado
+    return Icons.warning_amber; // Mucho calor
+  }
+
+  // Consejos adaptados para personas que trabajan en casa
   List<String> getDefaultAdvices(double temp) {
     if (temp < 15) {
       return [
-        "Abrígate bien, podría hacer más frío durante la noche.",
-        "Toma bebidas calientes para mantener tu temperatura corporal.",
-        "Evita salir sin chaqueta.",
-        "Mantente en lugares cálidos para evitar resfríos."
+        "Mantente abrigado para trabajar comodamente en casa.",
+        "Si te da frio, realiza pausas activas para calentar el cuerpo.",
+        "Evita trabajar cerca de ventanas abiertas para no enfriarte.",
+        "Una bebida caliente te ayudara a mantener energia."
       ];
     } else if (temp < 25) {
       return [
-        "Temperatura agradable, ideal para actividades al aire libre.",
-        "Mantente hidratado durante el día.",
-        "Usa ropa cómoda y ligera.",
-        "Evita el sol del mediodía si es posible."
+        "Clima agradable para mantener la productividad.",
+        "Aprovecha para ventilar tu espacio de trabajo.",
+        "Mantente hidratado mientras trabajas.",
+        "Organiza pausas cortas para estirarte."
       ];
     } else if (temp < 32) {
       return [
-        "Evita el sol directo entre las 11 a.m. y 3 p.m.",
-        "Usa protector solar y gorra.",
-        "Bebe mucha agua.",
-        "Busca sombra si estás al aire libre."
+        "Evita trabajar cerca del sol directo en ventanas.",
+        "Usa ropa ligera para mayor comodidad.",
+        "Toma agua constantemente mientras trabajas.",
+        "Ventila el lugar o usa un ventilador si es posible."
       ];
     } else {
       return [
-        "Temperaturas muy altas, limita la exposición al sol.",
-        "Evita actividades físicas intensas al aire libre.",
-        "Permanece en lugares ventilados o con sombra.",
-        "Rehidrátate constantemente."
+        "Temperatura muy alta, evita actividades intensas en casa.",
+        "Mantente en un espacio ventilado mientras trabajas.",
+        "Hidrata constantemente para evitar agotamientos.",
+        "Evita usar aparatos que generen mas calor."
       ];
     }
   }
@@ -71,7 +78,7 @@ class _AdvicePageState extends State<AdvicePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Consejos y Recomendaciones"),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.deepPurple,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -79,26 +86,52 @@ class _AdvicePageState extends State<AdvicePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Titulo
               Text(
-                "Temperatura actual: ${widget.temperature.toStringAsFixed(1)}°C",
+                "Temperatura actual: ${widget.temperature.toStringAsFixed(1)} °C",
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
 
+              const SizedBox(height: 20),
               const Text(
-                "Consejos del día:",
+                "Consejos del dia:",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
 
+              // Consejos predeterminados en Cards
               ...advices.map(
-                (advice) => ListTile(
-                  leading: const Icon(Icons.lightbulb, color: Colors.amber),
-                  title: Text(advice),
+                (advice) => Card(
+                  elevation: 3,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          _getIconForTemp(widget.temperature),
+                          color: Colors.deepPurple,
+                          size: 28,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            advice,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
 
               const Divider(height: 40),
 
+              // Crear consejos
               const Text(
                 "Crea tus propios consejos:",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -128,10 +161,31 @@ class _AdvicePageState extends State<AdvicePage> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
 
+              // Consejos personalizados
               ...userAdvices.map(
-                (advice) => ListTile(
-                  leading: const Icon(Icons.person, color: Colors.green),
-                  title: Text(advice),
+                (advice) => Card(
+                  color: Colors.green.shade50,
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.person, color: Colors.green, size: 26),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            advice,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
