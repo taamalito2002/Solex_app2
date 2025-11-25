@@ -27,3 +27,6 @@ flutter:
   assets:
     - assets/images/solex_logo.png
     - assets/images/fondoamanecer.jpg
+    - assets/images/Fondo_Oscuro.png
+    - assets/images/Nubes.sol.png
+    - assets/images/Simbolo.temperatura.png

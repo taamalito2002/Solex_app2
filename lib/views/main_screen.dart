@@ -12,7 +12,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selected = 0;
-  double? _temperature; // 🔥 guardamos la temperatura actual
+  double? _temperature;
 
   void _onTemperatureChanged(double temp) {
     setState(() {
@@ -28,21 +28,36 @@ class _MainScreenState extends State<MainScreen> {
       HomePage(onTemperatureChanged: _onTemperatureChanged),
       const HistoryPage(),
       AdvicePage(temperature: _temperature ?? 0),
-
     ];
 
     return Scaffold(
+      backgroundColor: Colors.black, // 🖤 Fondo negro
       body: pages[_selected],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black, // 🖤 Fondo negro en el menú
         currentIndex: _selected,
         onTap: _onTap,
-        selectedItemColor: Colors.deepPurple,
+        
+        selectedItemColor: Colors.white,    // 🤍 Íconos activos en blanco
+        unselectedItemColor: Colors.white70, // 🤍 Íconos inactivos en blanco suave
+        
+        type: BottomNavigationBarType.fixed, // evita animaciones raras
+
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Historial'),
-          BottomNavigationBarItem(icon: Icon(Icons.tips_and_updates), label: 'Consejos'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Inicio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'Historial',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.tips_and_updates),
+            label: 'Consejos',
+          ),
         ],
-      ),
-    );
-  }
+     ),
+);
+}
 }

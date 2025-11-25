@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   final WeatherService _service = WeatherService();
 
   bool _loading = true;
+
   String _city = "Cali";
   double? _temp;
   int? _humidity;
@@ -38,7 +39,6 @@ class _HomePageState extends State<HomePage> {
 
     final data = await _service.getWeatherByLocation();
 
-    // Evita setState despues de que la pantalla se haya cerrado
     if (!mounted) return;
 
     if (data != null) {
@@ -52,7 +52,6 @@ class _HomePageState extends State<HomePage> {
         _applyData(fallback);
       } else {
         if (!mounted) return;
-
         setState(() {
           _loading = false;
           _error = "No se pudo obtener el clima.";
@@ -73,12 +72,10 @@ class _HomePageState extends State<HomePage> {
       _loading = false;
     });
 
-    // Evitar llamar a setState en otra pantalla si ya no existe
     if (mounted && _temp != null) {
       widget.onTemperatureChanged(_temp!);
     }
 
-    // Guardar en historial
     HistoryService.addWeatherRecord({
       "city": _city,
       "temp": _temp,
@@ -91,56 +88,103 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Clima actual'),
-        backgroundColor: Colors.deepPurple,
-      ),
-      body: Center(
-        child: _loading
-            ? const CircularProgressIndicator()
-            : _error != null
-                ? Text(
-                    _error!,
-                    style: const TextStyle(color: Colors.red),
-                  )
-                : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Ciudad: $_city",
-                        style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Temperatura: ${_temp?.toStringAsFixed(1)} °C",
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      Text(
-                        "Humedad: ${_humidity ?? '--'} %",
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        "Viento: ${_wind?.toStringAsFixed(1)} km/h",
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        "Pronostico: $_description",
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: _loadWeather,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
-                        ),
-                        child: const Text(
-                          "Actualizar",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
+      backgroundColor: Colors.black, // si tienes un fondo, esto se puede quitar
+      body: Stack(
+        children: [
+
+          // ----------------------
+          // LOGO + NOMBRE ARRIBA IZQUIERDA
+          // ----------------------
+          Positioned(
+            top: 20,
+            left: -10,
+            child: Row(
+              children: [
+                Image.asset(
+                  'assets/images/solex_logo.png',
+                  height: 100,
+                  width: 100,
+                ),
+                const SizedBox(width: 4),
+                const Text(
+                  "SOLEX",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
                   ),
+                ),
+              ],
+            ),
+          ),
+
+          // ----------------------
+          // CONTENIDO ORIGINAL DEL HOME
+          // ----------------------
+          Center(
+            child: _loading
+                ? const CircularProgressIndicator(color: Colors.white)
+                : _error != null
+                    ? Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.red, fontSize: 22),
+                      )
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Ciudad: $_city",
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Temperatura: ${_temp?.toStringAsFixed(1)} °C",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            "Humedad: ${_humidity ?? '--'} %",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            "Viento: ${_wind?.toStringAsFixed(1)} km/h",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            "Pronostico: $_description",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: _loadWeather,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                            ),
+                            child: const Text(
+                              "Actualizar",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+          ),
+        ],
       ),
     );
   }
