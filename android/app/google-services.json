@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926624379234",
+    "project_id": "solex-app",
+    "storage_bucket": "solex-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926624379234:android:7a63d4193e0db6437abc3b",
+        "android_client_info": {
+          "package_name": "com.juan.solex_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6zeJ9l4RDjCCk9dlcRcoQNTaxec-dF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

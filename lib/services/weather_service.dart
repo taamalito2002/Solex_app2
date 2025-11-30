@@ -26,10 +26,10 @@ class WeatherService {
     }
   }
 
-  // 🔹 Obtener el clima usando la ubicación actual
+
   Future<Map<String, dynamic>?> getWeatherByLocation() async {
     try {
-      // Verificar permisos de ubicación
+
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         throw Exception("El GPS está desactivado.");
@@ -52,7 +52,7 @@ class WeatherService {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Llamar a la API con latitud y longitud
+
       final url = Uri.parse(
         "https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$apiKey&units=metric&lang=es",
       );
@@ -71,12 +71,12 @@ class WeatherService {
     }
   }
 
-  // 🔹 Método auxiliar para parsear la respuesta
+
   Map<String, dynamic> _parseWeatherData(dynamic data) {
     return {
       "temp": data["main"]["temp"].toDouble(),
       "humidity": data["main"]["humidity"].toInt(),
-      "wind": data["wind"]["speed"].toDouble() * 3.6, // m/s → km/h
+      "wind": data["wind"]["speed"].toDouble() * 3.6, 
       "description": data["weather"][0]["description"],
       "city": data["name"],
     };

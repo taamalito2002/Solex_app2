@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 import '../services/history_service.dart';
+import 'config_page.dart';
 
 class HomePage extends StatefulWidget {
   final Function(double) onTemperatureChanged;
@@ -15,7 +16,6 @@ class _HomePageState extends State<HomePage> {
   final WeatherService _service = WeatherService();
 
   bool _loading = true;
-
   String _city = "Cali";
   double? _temp;
   int? _humidity;
@@ -87,105 +87,212 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black, // si tienes un fondo, esto se puede quitar
-      body: Stack(
-        children: [
+    final size = MediaQuery.of(context).size;
+    final circleSize = size.height * 0.4;
 
-          // ----------------------
-          // LOGO + NOMBRE ARRIBA IZQUIERDA
-          // ----------------------
-          Positioned(
-            top: 20,
-            left: -10,
-            child: Row(
-              children: [
-                Image.asset(
-                  'assets/images/solex_logo.png',
-                  height: 100,
-                  width: 100,
-                ),
-                const SizedBox(width: 4),
-                const Text(
-                  "SOLEX",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator(color: Colors.white))
+            : _error != null
+                ? Center(
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(color: Colors.red, fontSize: 22),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // LOGO + SOLEX
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/images/solex_logo.png",
+                                    height: 65,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    "SOLEX",
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontFamily: "Montserrat",
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.settings, color: Colors.white, size: 32),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ConfigPage(
+                                        temperaturaActual: _temp ?? 0,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // CAJITA GRIS
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade900,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.white24, width: 1),
+                            ),
+                            child: Column(
+                              children: [
+                                // CIUDAD
+                                Text(
+                                  _city,
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    fontFamily: "Montserrat",
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 15),
+
+                                // CÍRCULO CON TEMPERATURA
+                                Center(
+                                  child: SizedBox(
+                                    width: circleSize,
+                                    height: circleSize,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/images/Simbolo.temperatura.png",
+                                          fit: BoxFit.contain,
+                                        ),
+                                        Positioned(
+                                          top: circleSize * 0.28,
+                                          child: Text(
+                                            "${_temp?.toStringAsFixed(1)}°C",
+                                            style: const TextStyle(
+                                              fontSize: 38,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontFamily: "Montserrat",
+                                            ),
+                                          ),
+                                        ),
+                                        // Imagen de NUBES / SOL
+                                        Positioned(
+                                          top: circleSize * 0.28,
+                                          right: circleSize * 0.15,
+                                          child: Image.asset(
+                                            "assets/images/Nubes.sol.png",
+                                            width: circleSize * 0.45,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 15),
+
+                                // HUMEDAD / PRONÓSTICO / VIENTO
+                                Column(
+                                  children: [
+                                    _infoRow("Humedad Actual", "${_humidity ?? "--"}%"),
+                                    _divider(),
+                                    _infoRow("Pronóstico", _description ?? "--"),
+                                    _divider(),
+                                    _infoRow("Viento", "${_wind?.toStringAsFixed(1) ?? "--"} km/h"),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 15),
+
+                                // BOTÓN ACTUALIZAR
+                                ElevatedButton(
+                                  onPressed: _loadWeather,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.black,
+                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 30),
+                                    side: const BorderSide(color: Colors.white24),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "ACTUALIZAR",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "Montserrat",
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+      ),
+    );
+  }
+
+  // --------------------------
+  // Helper Widgets
+  // --------------------------
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 18,
+              fontFamily: "Montserrat",
             ),
           ),
-
-          // ----------------------
-          // CONTENIDO ORIGINAL DEL HOME
-          // ----------------------
-          Center(
-            child: _loading
-                ? const CircularProgressIndicator(color: Colors.white)
-                : _error != null
-                    ? Text(
-                        _error!,
-                        style: const TextStyle(color: Colors.red, fontSize: 22),
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Ciudad: $_city",
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "Temperatura: ${_temp?.toStringAsFixed(1)} °C",
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            "Humedad: ${_humidity ?? '--'} %",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            "Viento: ${_wind?.toStringAsFixed(1)} km/h",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            "Pronostico: $_description",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: _loadWeather,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                            ),
-                            child: const Text(
-                              "Actualizar",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontFamily: "Montserrat",
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _divider() {
+    return const Divider(color: Colors.white24, thickness: 1);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'history_page.dart';
 import 'advice_page.dart';
+import '../services/umbral_service.dart';  
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,10 +15,14 @@ class _MainScreenState extends State<MainScreen> {
   int _selected = 0;
   double? _temperature;
 
+
   void _onTemperatureChanged(double temp) {
     setState(() {
       _temperature = temp;
     });
+
+
+    UmbralService().verificarUmbral(temp);
   }
 
   void _onTap(int idx) => setState(() => _selected = idx);
@@ -31,18 +36,15 @@ class _MainScreenState extends State<MainScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.black, // 🖤 Fondo negro
+      backgroundColor: Colors.black,
       body: pages[_selected],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black, // 🖤 Fondo negro en el menú
+        backgroundColor: Colors.black,
         currentIndex: _selected,
         onTap: _onTap,
-        
-        selectedItemColor: Colors.white,    // 🤍 Íconos activos en blanco
-        unselectedItemColor: Colors.white70, // 🤍 Íconos inactivos en blanco suave
-        
-        type: BottomNavigationBarType.fixed, // evita animaciones raras
-
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -57,7 +59,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Consejos',
           ),
         ],
-     ),
-);
-}
+      ),
+    );
+  }
 }

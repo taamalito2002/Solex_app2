@@ -21,22 +21,29 @@ class _AdvicePageState extends State<AdvicePage> {
     }
   }
 
-  // Iconos segun la temperatura
+  // Iconos según la temperatura
   IconData _getIconForTemp(double temp) {
-    if (temp < 15) return Icons.ac_unit; // Frio
-    if (temp < 25) return Icons.wb_sunny; // Templado
-    if (temp < 32) return Icons.thermostat; // Calor moderado
-    return Icons.warning_amber; // Mucho calor
+    if (temp < 15) return Icons.ac_unit;       // Copo de nieve
+    if (temp < 25) return Icons.wb_sunny;     // Sol
+    if (temp < 32) return Icons.thermostat;   // Termostato
+    return Icons.warning_amber;               // Alerta
   }
 
-  // Consejos adaptados para personas que trabajan en casa
+  // Color según temperatura
+  Color _getIconColor(double temp) {
+    if (temp < 15) return Colors.cyanAccent;       // Copo de nieve - azul
+    if (temp < 25) return Colors.yellowAccent;     // Sol - amarillo
+    if (temp < 32) return Colors.orangeAccent;     // Termostato - naranja
+    return Colors.redAccent;                       // Alerta - rojo
+  }
+
   List<String> getDefaultAdvices(double temp) {
     if (temp < 15) {
       return [
-        "Mantente abrigado para trabajar comodamente en casa.",
-        "Si te da frio, realiza pausas activas para calentar el cuerpo.",
+        "Mantente abrigado para trabajar cómodamente en casa.",
+        "Si te da frío, realiza pausas activas para calentar el cuerpo.",
         "Evita trabajar cerca de ventanas abiertas para no enfriarte.",
-        "Una bebida caliente te ayudara a mantener energia."
+        "Una bebida caliente te ayudará a mantener energía."
       ];
     } else if (temp < 25) {
       return [
@@ -57,7 +64,7 @@ class _AdvicePageState extends State<AdvicePage> {
         "Temperatura muy alta, evita actividades intensas en casa.",
         "Mantente en un espacio ventilado mientras trabajas.",
         "Hidrata constantemente para evitar agotamientos.",
-        "Evita usar aparatos que generen mas calor."
+        "Evita usar aparatos que generen más calor."
       ];
     }
   }
@@ -71,14 +78,66 @@ class _AdvicePageState extends State<AdvicePage> {
     }
   }
 
+  Widget _buildCard(String advice, IconData icon,
+      {bool isUser = false, double? temp}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isUser
+              ? [Colors.grey.shade900, Colors.grey.shade800]
+              : [Colors.black87, Colors.black54],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black54,
+            blurRadius: 6,
+            offset: Offset(2, 4),
+          )
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              icon,
+              color: isUser
+                  ? Colors.deepPurpleAccent
+                  : _getIconColor(temp ?? 0),
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                advice,
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final advices = getDefaultAdvices(widget.temperature);
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Consejos y Recomendaciones"),
-        backgroundColor: Colors.deepPurple,
+        title: const Text(
+          "Consejos y Recomendaciones",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -86,107 +145,72 @@ class _AdvicePageState extends State<AdvicePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Titulo
               Text(
                 "Temperatura actual: ${widget.temperature.toStringAsFixed(1)} °C",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-
               const SizedBox(height: 20),
               const Text(
-                "Consejos del dia:",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                "Consejos del día:",
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-
-              // Consejos predeterminados en Cards
+              const SizedBox(height: 10),
               ...advices.map(
-                (advice) => Card(
-                  elevation: 3,
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          _getIconForTemp(widget.temperature),
-                          color: Colors.deepPurple,
-                          size: 28,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            advice,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                (advice) => _buildCard(advice, _getIconForTemp(widget.temperature),
+                    temp: widget.temperature),
               ),
-
-              const Divider(height: 40),
-
-              // Crear consejos
+              const Divider(height: 40, color: Colors.white24),
               const Text(
                 "Crea tus propios consejos:",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-
+              const SizedBox(height: 10),
               TextField(
                 controller: _adviceController,
-                decoration: const InputDecoration(
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
                   labelText: "Escribe un consejo",
-                  border: OutlineInputBorder(),
+                  labelStyle: const TextStyle(color: Colors.white70),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.white, width: 1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey.shade900,
                 ),
               ),
-
               const SizedBox(height: 10),
-
               ElevatedButton.icon(
                 onPressed: addUserAdvice,
                 icon: const Icon(Icons.add),
                 label: const Text("Agregar Consejo"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 5, 5, 5),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: const BorderSide(color: Colors.white, width: 1),
+                  ),
+                ),
               ),
-
               const SizedBox(height: 20),
-
               if (userAdvices.isNotEmpty)
                 const Text(
                   "Tus consejos personalizados:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-
-              // Consejos personalizados
+              const SizedBox(height: 10),
               ...userAdvices.map(
-                (advice) => Card(
-                  color: Colors.green.shade50,
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.person, color: Colors.green, size: 26),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            advice,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                (advice) => _buildCard(advice, Icons.person, isUser: true),
               ),
             ],
           ),

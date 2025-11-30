@@ -5,12 +5,11 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Obtener dimensiones de pantalla
+
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
 
-    // Escalas relativas
     double logoSize = width * 0.45;
     double titleFont = width * 0.07;
     double subtitleFont = width * 0.065;
@@ -28,7 +27,7 @@ class WelcomePage extends StatelessWidget {
           ),
         ),
         child: Container(
-          color: Colors.black.withOpacity(0.5), // Capa oscura para contraste
+          color: Colors.black.withOpacity(0.5), 
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

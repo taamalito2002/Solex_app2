@@ -15,6 +15,12 @@ dependencies:
   geolocator: ^14.0.2
   shared_preferences: ^2.3.3
   intl: ^0.19.0
+  flutter_local_notifications: ^17.1.2
+  firebase_core: 2.32.0
+  firebase_auth: ^4.8.1
+  cloud_firestore: ^4.9.0
+
+
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +36,4 @@ flutter:
     - assets/images/Fondo_Oscuro.png
     - assets/images/Nubes.sol.png
     - assets/images/Simbolo.temperatura.png
+
