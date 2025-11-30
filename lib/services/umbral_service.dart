@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class UmbralService {
-  double umbral = 28.0; // Puedes cambiarlo desde ConfigPage
+  static double umbralCache = 28.0;
 
-  // Inicializamos el plugin
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -11,17 +12,61 @@ class UmbralService {
     _initNotifications();
   }
 
-  void actualizarUmbral(double nuevo) {
-    umbral = nuevo;
+  /// -------------------------------
+  /// LEE el umbral desde Firestore
+  /// -------------------------------
+  static Future<double> getUmbral() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return umbralCache; // En caso de que no haya login
+    }
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    if (doc.exists && doc.data()!.containsKey('umbral')) {
+      umbralCache = (doc['umbral'] as num).toDouble();
+    }
+
+    return umbralCache;
   }
 
+  /// -------------------------------
+  /// GUARDA el umbral en Firestore
+  /// -------------------------------
+  static Future<void> setUmbral(double nuevoUmbral) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    umbralCache = nuevoUmbral;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .set(
+      {'umbral': nuevoUmbral},
+      SetOptions(merge: true),
+    );
+  }
+
+  /// -------------------------------
+  /// VERIFICAR UMBRAL CON NOTIFICACIONES
+  /// -------------------------------
   Future<void> verificarUmbral(double temperatura) async {
+    final umbral = await getUmbral();
+
     if (temperatura > umbral) {
-      await _enviarNotificacionAlerta(temperatura);
+      await _enviarNotificacionAlerta(temperatura, umbral);
     }
   }
 
-  // Configuracion inicial
+  /// -------------------------------
+  /// Inicializacion de notificaciones
+  /// -------------------------------
   void _initNotifications() {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -32,26 +77,29 @@ class UmbralService {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> _enviarNotificacionAlerta(double temperatura) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  /// -------------------------------
+  /// ENVIAR NOTIFICACION
+  /// -------------------------------
+  Future<void> _enviarNotificacionAlerta(
+      double temperatura, double umbral) async {
+    const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-      'alertas', // id del canal
-      'Alertas de temperatura', // nombre del canal
-      channelDescription: 'Notificaciones de alerta cuando la temperatura supera el umbral',
+      'alertas',
+      'Alertas de temperatura',
+      channelDescription:
+          'Notificaciones cuando la temperatura supera el umbral.',
       importance: Importance.max,
       priority: Priority.high,
-      ticker: 'ticker',
     );
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    const NotificationDetails notifDetails =
+        NotificationDetails(android: androidDetails);
 
     await flutterLocalNotificationsPlugin.show(
       1,
       'Alerta de temperatura',
-      'La temperatura actual es ${temperatura.toStringAsFixed(1)} °C y supera el umbral de $umbral °C.',
-      platformChannelSpecifics,
-      payload: 'alerta_temperatura',
+      'Temperatura: ${temperatura.toStringAsFixed(1)}°C (Umbral: $umbral°C)',
+      notifDetails,
     );
   }
 }

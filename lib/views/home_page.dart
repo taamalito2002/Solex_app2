@@ -102,10 +102,9 @@ class _HomePageState extends State<HomePage> {
                       style: const TextStyle(color: Colors.red, fontSize: 22),
                     ),
                   )
-                : SingleChildScrollView(
+                : SingleChildScrollView(   // <<-- AQUI YA NO HABRA GLOW
                     child: Column(
                       children: [
-                        // LOGO + SOLEX
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           child: Row(
@@ -148,7 +147,6 @@ class _HomePageState extends State<HomePage> {
 
                         const SizedBox(height: 10),
 
-                        // CAJITA GRIS
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Container(
@@ -160,7 +158,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                             child: Column(
                               children: [
-                                // CIUDAD
                                 Text(
                                   _city,
                                   style: const TextStyle(
@@ -174,7 +171,6 @@ class _HomePageState extends State<HomePage> {
 
                                 const SizedBox(height: 15),
 
-                                // CÍRCULO CON TEMPERATURA
                                 Center(
                                   child: SizedBox(
                                     width: circleSize,
@@ -198,7 +194,6 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ),
                                         ),
-                                        // Imagen de NUBES / SOL
                                         Positioned(
                                           top: circleSize * 0.28,
                                           right: circleSize * 0.15,
@@ -215,12 +210,11 @@ class _HomePageState extends State<HomePage> {
 
                                 const SizedBox(height: 15),
 
-                                // HUMEDAD / PRONÓSTICO / VIENTO
                                 Column(
                                   children: [
                                     _infoRow("Humedad Actual", "${_humidity ?? "--"}%"),
                                     _divider(),
-                                    _infoRow("Pronóstico", _description ?? "--"),
+                                    _infoRow("Pronostico", _description ?? "--"),
                                     _divider(),
                                     _infoRow("Viento", "${_wind?.toStringAsFixed(1) ?? "--"} km/h"),
                                   ],
@@ -228,7 +222,6 @@ class _HomePageState extends State<HomePage> {
 
                                 const SizedBox(height: 15),
 
-                                // BOTÓN ACTUALIZAR
                                 ElevatedButton(
                                   onPressed: _loadWeather,
                                   style: ElevatedButton.styleFrom(
@@ -262,9 +255,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // --------------------------
-  // Helper Widgets
-  // --------------------------
   Widget _infoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),

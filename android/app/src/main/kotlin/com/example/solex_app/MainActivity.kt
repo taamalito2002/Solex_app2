@@ -1,4 +1,4 @@
-package com.example.solex_app
+package com.juan.solex_app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,7 +1,13 @@
-// Gradle de nivel raíz
-plugins {
-    // Declaramos el plugin de Google Services pero no lo aplicamos aquí
-    id("com.google.gms.google-services") version "4.4.4" apply false
+// build.gradle.kts (nivel raíz)
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.google.gms:google-services:4.3.15") // AQUI SI VA
+    }
 }
 
 allprojects {
@@ -15,6 +21,7 @@ val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")
         .get()
+
 rootProject.layout.buildDirectory.value(newBuildDir)
 
 subprojects {

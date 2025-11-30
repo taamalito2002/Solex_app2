@@ -31,6 +31,12 @@ class MyApp extends StatelessWidget {
       title: 'SOLEX_APP',
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       debugShowCheckedModeBanner: false,
+
+      // 🔥 Aqui quitamos el brillo azul del ScrollView
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        overscroll: false,
+      ),
+
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

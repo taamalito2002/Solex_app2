@@ -16,16 +16,20 @@ dependencies:
   shared_preferences: ^2.3.3
   intl: ^0.19.0
   flutter_local_notifications: ^17.1.2
-  firebase_core: 2.32.0
-  firebase_auth: ^4.8.1
-  cloud_firestore: ^4.9.0
-
-
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/logo_icon.png"
 
 flutter:
   uses-material-design: true
@@ -36,4 +40,3 @@ flutter:
     - assets/images/Fondo_Oscuro.png
     - assets/images/Nubes.sol.png
     - assets/images/Simbolo.temperatura.png
-

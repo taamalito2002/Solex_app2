@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../controllers/auth_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -9,16 +9,41 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final AuthController _authController = AuthController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
 
-  void _recoverPassword() {
+  Future<void> _recoverPassword() async {
     String email = _emailController.text.trim();
-    String result = _authController.recoverPassword(email);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(result)),
-    );
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ingresa tu correo")),
+      );
+      return;
+    }
+
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Correo de recuperacion enviado")),
+      );
+
+      Navigator.pop(context);
+
+    } on FirebaseAuthException catch (e) {
+      String msg = "Error desconocido";
+
+      if (e.code == "user-not-found") {
+        msg = "No existe un usuario con ese correo";
+      } else if (e.code == "invalid-email") {
+        msg = "Correo invalido";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg)),
+      );
+    }
   }
 
   @override
@@ -26,11 +51,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final double viewportHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      extendBodyBehindAppBar: true, // sin AppBar visible
+      extendBodyBehindAppBar: true,
 
       body: Stack(
         children: [
-          // ⭐ Fondo completo
+          // Fondo
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -40,25 +65,23 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ),
           ),
 
-          // ⭐ Capa oscura encima
+          // Capa oscura
           Container(
             color: Colors.black.withOpacity(0.5),
           ),
 
-          // ⭐ Contenido centro
+          // Contenido
           Padding(
             padding: const EdgeInsets.all(16),
             child: Center(
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: viewportHeight * 0.8,
-                ),
+                constraints: BoxConstraints(minHeight: viewportHeight * 0.8),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       const SizedBox(height: 80),
 
-                      // LOGO
+                      // Logo
                       Image.asset(
                         'assets/images/solex_logo.png',
                         width: 180,
@@ -66,7 +89,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                       const SizedBox(height: 10),
 
-                      // TITULO
                       const Text(
                         "Recuperar Contraseña",
                         textAlign: TextAlign.center,
@@ -79,7 +101,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                       const SizedBox(height: 25),
 
-                      // ⭐ CUADRO DEL FORMULARIO
+                      // Cuadro formulario
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -88,7 +110,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         ),
                         child: Column(
                           children: [
-                            // CAMPO CORREO
                             TextField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
@@ -107,7 +128,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                             const SizedBox(height: 30),
 
-                            // BOTÓN RECUPERAR
                             SizedBox(
                               width: double.infinity,
                               height: 50,
@@ -132,7 +152,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                             const SizedBox(height: 25),
 
-                            // BOTÓN VOLVER
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(context);

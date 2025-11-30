@@ -4,7 +4,7 @@
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:label="solex_app"
+        android:label="SOLEX"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

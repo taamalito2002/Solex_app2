@@ -16,26 +16,42 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  bool _loading = false;
+
   Future<void> _login() async {
-    String result = _authController.login(
-      _emailController.text,
-      _passwordController.text,
-    );
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(result)));
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Completa todos los campos")),
+      );
+      return;
+    }
 
-    if (result == "Login exitoso") {
-      final prefs = await SharedPreferences.getInstance();
-      bool? accepted = prefs.getBool('accepted_conditions');
+    setState(() => _loading = true);
 
-      if (accepted == true) {
-        // ✅ Ya aceptó condiciones, ir al MainScreen
-        Navigator.pushReplacementNamed(context, '/main');
+    try {
+      String result = await _authController.login(email, password);
+
+      if (result == "OK") {
+        final prefs = await SharedPreferences.getInstance();
+        bool? accepted = prefs.getBool('accepted_conditions');
+
+        if (accepted == true) {
+          Navigator.pushReplacementNamed(context, '/main');
+        } else {
+          Navigator.pushReplacementNamed(context, '/conditions');
+        }
       } else {
-        // ⚙️ No ha aceptado, ir a la pantalla de condiciones
-        Navigator.pushReplacementNamed(context, '/conditions');
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(result)));
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error: $e")));
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
@@ -67,17 +83,13 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: height * 0.08),
-
-                  // Logo
                   Image.asset(
                     'assets/images/solex_logo.png',
                     width: width * 0.45,
                   ),
-
                   SizedBox(height: height * 0.03),
-
                   const Text(
-                    "¡Bienvenido a Solex!\nTu clima, tu día.",
+                    "¡Bienvenido a Solex!\nTu clima, tu dia.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -85,9 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   SizedBox(height: height * 0.05),
-
                   Container(
                     padding: EdgeInsets.all(width * 0.05),
                     decoration: BoxDecoration(
@@ -100,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _emailController,
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                            labelText: "Correo Electrónico",
+                            labelText: "Correo Electronico",
                             labelStyle: TextStyle(color: Colors.white70),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white38),
@@ -116,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                           obscureText: true,
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                            labelText: "Contraseña",
+                            labelText: "Contrasena",
                             labelStyle: TextStyle(color: Colors.white70),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white38),
@@ -127,13 +137,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(height: height * 0.04),
-
-                        // Botón principal
                         SizedBox(
                           width: double.infinity,
                           height: height * 0.07,
                           child: ElevatedButton(
-                            onPressed: _login,
+                            onPressed: _loading ? null : _login,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange,
                               shape: RoundedRectangleBorder(
@@ -141,34 +149,35 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               elevation: 6,
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "Iniciar sesión",
-                                  style: TextStyle(
+                            child: _loading
+                                ? const CircularProgressIndicator(
                                     color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        "Iniciar sesion",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(width: width * 0.02),
+                                      const Icon(
+                                        Icons.arrow_right_alt,
+                                        color: Colors.white,
+                                        size: 26,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                SizedBox(width: width * 0.02),
-                                const Icon(
-                                  Icons.arrow_right_alt,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-
                   SizedBox(height: height * 0.03),
-
-                  // Botones inferiores
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -179,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                     child: const Text(
-                      "¿Olvidaste tu contraseña?",
+                      "¿Olvidaste tu contrasena?",
                       style: TextStyle(color: Colors.orange, fontSize: 16),
                     ),
                   ),
@@ -197,7 +206,6 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(color: Colors.orange, fontSize: 16),
                     ),
                   ),
-
                   SizedBox(height: height * 0.05),
                 ],
               ),

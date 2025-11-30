@@ -1,31 +1,41 @@
-import '../models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthService {
-  final List<User> _users = [
-    User(email: "test@example.com", password: "123456"),
-  ];
+class AuthController {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   // LOGIN
-  bool login(String email, String password) {
-    for (var user in _users) {
-      if (user.email == email && user.password == password) {
-        return true;
-      }
+  Future<String> login(String email, String password) async {
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return "Login exitoso";
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? "Error desconocido";
     }
-    return false;
   }
 
-  // REGISTER
-  bool register(User user) {
-    if (_users.any((u) => u.email == user.email)) return false;
-    _users.add(user);
-    return true;
+  // REGISTRAR USUARIO
+  Future<String> register(String email, String password) async {
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return "Registro exitoso";
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? "Error desconocido";
+    }
   }
 
-  // Dentro de AuthService
-bool usersExist(String email) {
-  return _users.any((u) => u.email == email);
+  // RECUPERAR CONTRASENA
+  Future<String> recoverPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      return "Se envio un correo para restablecer tu contrasena";
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? "Error desconocido";
+    }
+  }
 }
-
-}
-

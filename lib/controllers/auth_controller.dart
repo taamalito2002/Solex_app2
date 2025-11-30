@@ -1,31 +1,59 @@
-import '../services/auth_service.dart';
-import '../models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthController {
   static final AuthController _instance = AuthController._internal();
   factory AuthController() => _instance;
   AuthController._internal();
 
-  final AuthService _authService = AuthService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String register(String email, String password) {
-    bool success = _authService.register(User(email: email, password: password));
-    return success ? "Registro exitoso" : "El email ya está registrado";
+  // ================================
+  //   REGISTRAR USUARIO
+  // ================================
+  Future<String> register(String email, String password) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return "OK";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "email-already-in-use") return "El correo ya existe";
+      if (e.code == "invalid-email") return "Correo invalido";
+      if (e.code == "weak-password") return "Contrasena muy debil";
+      return "Error desconocido";
+    }
   }
 
-  String login(String email, String password) {
-    bool success = _authService.login(email, password);
-    return success ? "Login exitoso" : "Email o contraseña incorrectos";
+  // ================================
+  //   LOGIN USUARIO
+  // ================================
+  Future<String> login(String email, String password) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return "OK";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") return "Usuario no existe";
+      if (e.code == "wrong-password") return "Contrasena incorrecta";
+      if (e.code == "invalid-email") return "Correo invalido";
+      return "Error desconocido";
+    }
   }
 
-  // Añadir este método dentro de la clase AuthController
-String recoverPassword(String email) {
-  // Verifica si existe el usuario
-  bool exists = _authService.usersExist(email); // método que crearemos en AuthService
-  if (!exists) return "Email no encontrado";
-
-  // Simulamos envío de correo
-  return "Se ha enviado un correo para recuperar la contraseña a $email";
-}
-
+  // ================================
+  //   RECUPERAR CONTRASENA
+  // ================================
+  Future<String> recoverPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return "OK";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") return "El correo no existe";
+      if (e.code == "invalid-email") return "Correo invalido";
+      return "Error desconocido";
+    }
+  }
 }
