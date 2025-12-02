@@ -91,166 +91,174 @@ class _HomePageState extends State<HomePage> {
     final circleSize = size.height * 0.4;
 
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: _loading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
-            : _error != null
-                ? Center(
-                    child: Text(
-                      _error!,
-                      style: const TextStyle(color: Colors.red, fontSize: 22),
-                    ),
-                  )
-                : SingleChildScrollView(   // <<-- AQUI YA NO HABRA GLOW
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/images/solex_logo.png",
-                                    height: 65,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    "SOLEX",
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontFamily: "Montserrat",
+      backgroundColor: Colors.transparent, // ← YA NO ES NEGRO
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/fondoamanecer.jpg"), // ← TU FONDO
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: _loading
+              ? const Center(child: CircularProgressIndicator(color: Colors.white))
+              : _error != null
+                  ? Center(
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.red, fontSize: 22),
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/solex_logo.png",
+                                      height: 65,
                                     ),
-                                  ),
-                                ],
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.settings, color: Colors.white, size: 32),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ConfigPage(
-                                        temperaturaActual: _temp ?? 0,
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      "SOLEX",
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontFamily: "Montserrat",
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade900,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.white24, width: 1),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  _city,
-                                  style: const TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                    fontFamily: "Montserrat",
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 15),
-
-                                Center(
-                                  child: SizedBox(
-                                    width: circleSize,
-                                    height: circleSize,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Image.asset(
-                                          "assets/images/Simbolo.temperatura.png",
-                                          fit: BoxFit.contain,
-                                        ),
-                                        Positioned(
-                                          top: circleSize * 0.28,
-                                          child: Text(
-                                            "${_temp?.toStringAsFixed(1)}°C",
-                                            style: const TextStyle(
-                                              fontSize: 38,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontFamily: "Montserrat",
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: circleSize * 0.28,
-                                          right: circleSize * 0.15,
-                                          child: Image.asset(
-                                            "assets/images/Nubes.sol.png",
-                                            width: circleSize * 0.45,
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 15),
-
-                                Column(
-                                  children: [
-                                    _infoRow("Humedad Actual", "${_humidity ?? "--"}%"),
-                                    _divider(),
-                                    _infoRow("Pronostico", _description ?? "--"),
-                                    _divider(),
-                                    _infoRow("Viento", "${_wind?.toStringAsFixed(1) ?? "--"} km/h"),
                                   ],
                                 ),
-
-                                const SizedBox(height: 15),
-
-                                ElevatedButton(
-                                  onPressed: _loadWeather,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
-                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 30),
-                                    side: const BorderSide(color: Colors.white24),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    "ACTUALIZAR",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "Montserrat",
-                                    ),
-                                  ),
+                                IconButton(
+                                  icon: const Icon(Icons.settings, color: Colors.white, size: 32),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ConfigPage(
+                                          temperaturaActual: _temp ?? 0,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
                           ),
-                        ),
 
-                        const SizedBox(height: 20),
-                      ],
+                          const SizedBox(height: 10),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade900,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.white24, width: 1),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _city,
+                                    style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      fontFamily: "Montserrat",
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  Center(
+                                    child: SizedBox(
+                                      width: circleSize,
+                                      height: circleSize,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Image.asset(
+                                            "assets/images/Simbolo.temperatura.png",
+                                            fit: BoxFit.contain,
+                                          ),
+                                          Positioned(
+                                            top: circleSize * 0.28,
+                                            child: Text(
+                                              "${_temp?.toStringAsFixed(1)}°C",
+                                              style: const TextStyle(
+                                                fontSize: 38,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                fontFamily: "Montserrat",
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            top: circleSize * 0.28,
+                                            right: circleSize * 0.15,
+                                            child: Image.asset(
+                                              "assets/images/Nubes.sol.png",
+                                              width: circleSize * 0.45,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  Column(
+                                    children: [
+                                      _infoRow("Humedad Actual", "${_humidity ?? "--"}%"),
+                                      _divider(),
+                                      _infoRow("Pronostico", _description ?? "--"),
+                                      _divider(),
+                                      _infoRow("Viento", "${_wind?.toStringAsFixed(1) ?? "--"} km/h"),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 15),
+
+                                  ElevatedButton(
+                                    onPressed: _loadWeather,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(255, 255, 115, 0),
+                                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 30),
+                                      side: const BorderSide(color: Colors.white24),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      "ACTUALIZAR",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "Montserrat",
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-                  ),
+        ),
       ),
     );
   }
